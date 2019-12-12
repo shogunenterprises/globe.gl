@@ -178,14 +178,16 @@ export default Kapsule({
       state.renderObjs.tick();
       state.animationFrameRequestId = requestAnimationFrame(this._animationCycle);
     },
-    pointOfView: function(state, geoCoords = {}, transitionDuration = 0) {
+    pointOfView: function(state, geoCoords = {}, transitionDuration = 0, lookAt = {x: 0, y: 1, z: 0}) {
       const curGeoCoords = getGeoCoords();
+      const curGeoCoords = Object.assign({}, curGeoCoords, lookAt);
 
       // Getter
       if (geoCoords.lat === undefined && geoCoords.lng === undefined && geoCoords.altitude === undefined) {
         return curGeoCoords;
       } else { // Setter
         const finalGeoCoords = Object.assign({}, curGeoCoords, geoCoords);
+        const finalGeoCoords = Object.assign({}, finalGeoCoords, lookAt);
 
         if (!transitionDuration) { // no animation
           setCameraPos(finalGeoCoords);
@@ -209,8 +211,8 @@ export default Kapsule({
         return state.globe.toGeoCoords(state.renderObjs.cameraPosition());
       }
 
-      function setCameraPos({ lat, lng, altitude }) {
-        state.renderObjs.cameraPosition(state.globe.getCoords(lat, lng, altitude));
+      function setCameraPos({ lat, lng, altitude, x, y, z }) {
+        state.renderObjs.cameraPosition(state.globe.getCoords(lat, lng, altitude), {x: x, y: y, z: z});
       }
     },
     scene: state => state.renderObjs.scene(), // Expose scene
